@@ -51,6 +51,38 @@ async function uploadUint8Array(data: Uint8Array) {
 
 export default function Home() {
   const [result, setResult] = useState<string | null>(null);
+  const [model, setModel] = useState('');
+  const [chatQuery, setChatQuery] = useState('');
+  const [response, setResponse] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setModel(e.target.value);
+  };
+
+  const handleChatQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChatQuery(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    const apiKey = 'sk-PrvLgZ0dPj4cJRwZOvfW3pHVOvTvWwC7EKp88YnJayW2E9oR'; // Replace with your actual API key
+
+    try {
+      const response = await fetch('/api/redpill', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({model, chatQuery, apiKey}),
+      });
+      const data = await response.json();
+      setResponse(JSON.stringify(data, null, 2));
+      setError(null);
+    } catch (err) {
+      setError('err');
+      setResponse(null);
+    }
+  };
 
   // Define the function to be called on button click
   const handleClick = async (path: string) => {
@@ -92,97 +124,38 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
+      
       <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Generate a Remote Attestation.
-          </li>
-          <li>Get TEE Account.</li>
-          <li>Test Signing Capabilities.</li>
-        </ol>
-        <div className={styles.ctas}>
-          <a className={styles.primary} target="_blank"
-             rel="noopener noreferrer" onClick={() => handleClick('/api/remoteAttestation')}>
-            Remote Attestation
-          </a>
-          <a className={styles.primary} target="_blank"
-             rel="noopener noreferrer" onClick={() => handleClick('/api/account/address')}>
-            TEE Account
-          </a>
-        </div>
-
-        <div className={styles.ctas}>
-          <a className={styles.secondary} target="_blank"
-             rel="noopener noreferrer" onClick={() => handleClick('/api/signMessage')}>
-            Sign Message
-          </a>
-          <a className={styles.secondary} target="_blank"
-             rel="noopener noreferrer" onClick={() => handleClick('/api/signTypedData')}>
-            Sign Typed Data
-          </a>
-          <a className={styles.secondary} target="_blank"
-             rel="noopener noreferrer" onClick={() => handleClick('/api/signTransaction')}>
-            Sign Transaction
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://bit.ly/dstack-cheat-sheet"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://docs.phala.network/references/hackathon-guides/ethglobal-sf-hackathon-guide"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Guide
-        </a>
-        <a
-          href="https://github.com/Phala-Network/nextjs-viem-dstack-template"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to Code →
-        </a>
-      </footer>
-      <div className={styles.resultBox}>
-        <h3>Result:</h3>
-        <pre>{result}</pre>
+      <div>
+      <h1>RedPill API Call</h1>
+      <div>
+        <label>
+          Model:
+          <input type="text" value={model} onChange={handleModelChange} />
+        </label>
       </div>
+      <div>
+        <label>
+          Chat Query:
+          <input type="text" value={chatQuery} onChange={handleChatQueryChange} />
+        </label>
+      </div>
+      <button onClick={handleSubmit}>Submit</button>
+      {response && (
+        <div>
+          <h2>Response:</h2>
+          <pre>{response}</pre>
+        </div>
+      )}
+      {error && (
+        <div>
+          <h2>Error:</h2>
+          <pre>{error}</pre>
+        </div>
+      )}
+    </div>
+       
+      </main>
     </div>
   );
 }
