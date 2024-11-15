@@ -53,6 +53,7 @@ export default function Home() {
   const [result, setResult] = useState<string | null>(null);
   const [model, setModel] = useState('');
   const [chatQuery, setChatQuery] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [response, setResponse] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,9 +65,11 @@ export default function Home() {
     setChatQuery(e.target.value);
   };
 
-  const handleSubmit = async () => {
-    const apiKey = 'sk-PrvLgZ0dPj4cJRwZOvfW3pHVOvTvWwC7EKp88YnJayW2E9oR'; // Replace with your actual API key
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(e.target.value);
+  };
 
+  const handleSubmit = async () => {
     try {
       const response = await fetch('/api/redpill', {
         method: 'POST',
@@ -138,6 +141,12 @@ export default function Home() {
         <label>
           Chat Query:
           <input type="text" value={chatQuery} onChange={handleChatQueryChange} />
+        </label>
+      </div>
+      <div>
+        <label>
+          API Key:
+          <input type="text" value={apiKey} onChange={handleApiKeyChange} />
         </label>
       </div>
       <button onClick={handleSubmit}>Submit</button>
